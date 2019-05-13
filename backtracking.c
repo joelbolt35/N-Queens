@@ -19,45 +19,49 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-int total = 0;
 
-int  findPositions(int** board, int row, int const size);
-void print(int** board, int const size);
+int  findPositions(int** board, int row, int const size, int* solutionNum);
+void print(int** board, int const size, int* solutionNum);
 int  collisionCheck(int** board, int row, int col, int const size); 
+
+int** initializeBoard(int** board, int const size);
+void freeMem(int** board, int const size);
 
 int main()
 {
     // NxN matrix board
     int size = 0;
-    printf("Board Size: "); scanf("%d", &size); 
-    int** board = malloc(sizeof(int*) * size);
-    for(int i = 0; i < size; i++)
-        board[i] = malloc(sizeof(int) * size);
-    // Initialize board to 0's
-    for(int i = 0; i < size; i++)
-        for(int j = 0; j < size; j++)
-            board[i][j] = 0;
+    while(1)
+    {
+        int solutionNum = 0;
+        printf("Board Size (-1 to EXIT): "); scanf("%d", &size);
+        if(size == -1)
+            break; 
+        int** board = malloc(sizeof(int*) * size);;
+        initializeBoard(board, size);
 
+        // locate queen's positions
+        findPositions(board, 0, size, &solutionNum);
 
-    // locate queen's positions
-    findPositions(board, 0, size);
-
+        freeMem(board, size);
+    }
     return EXIT_SUCCESS;
 }
 
-int findPositions(int** board, int row, int const size)
+int findPositions(int** board, int row, int const size, int* solutionNum)
 {
+    //No Solution Cases
     if(size == 2 || size == 3)
     {
         printf(ANSI_COLOR_RED "No Solution!\n"ANSI_COLOR_RESET);
         return 0;
     }
 
-    // if all rows have queens, problem solved
+    // Base Case -> if all rows have queens, problem solved
     if(row == size)
     {
-        print(board, size);
-        total++;
+        print(board, size, solutionNum);
+        (*solutionNum)++;
         return 1;
     }
 
@@ -67,15 +71,15 @@ int findPositions(int** board, int row, int const size)
         board[row][i] = 1;
         // checking for collision
         if(collisionCheck(board, row, i, size) == 0) // If no collision
-            findPositions(board, row + 1, size); //recurse to next row. Returns 1 if the queen was placed successfully
+            findPositions(board, row + 1, size, solutionNum); //recurse to next row. Returns 1 if the queen was placed successfully
         board[row][i] = 0;
     }
     return 1;
 }
 
-void print(int** board, int const size)
+void print(int** board, int const size, int* solutionNum)
 {
-    printf(ANSI_COLOR_GREEN "Solution # %d:\n" ANSI_COLOR_RESET, total+1);
+    printf(ANSI_COLOR_GREEN "Solution # %d:\n" ANSI_COLOR_RESET, (*solutionNum)+1);
     for(int i = 0; i < size; i++)
     {
         printf("\n ");
@@ -118,3 +122,23 @@ int collisionCheck(int** board, int row, int col, int const size)
     return 0;
 }   
 
+int** initializeBoard(int** board, int const size)
+{
+    for(int i = 0; i < size; i++)
+        board[i] = malloc(sizeof(int) * size);
+    // Initialize board to 0's
+    for(int i = 0; i < size; i++)
+        for(int j = 0; j < size; j++)
+            board[i][j] = 0;
+}
+
+void freeMem(int** board, int const size)
+{
+    for(int i = 0; i < size; i++)
+    {
+        free(board[i]);
+        board[i] = NULL;
+    }
+    free(board);
+    board = NULL;
+}
