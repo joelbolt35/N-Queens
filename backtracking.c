@@ -41,9 +41,7 @@ int main()
     // locate queen's positions
     solveable = findPositions(board, 0, size);
 
-    if(solveable == 1)
-        print(board, size);
-    else
+    if(solveable == 0)
         printf(ANSI_COLOR_RED "No Solution!\n"ANSI_COLOR_RESET);
 
 
@@ -53,7 +51,14 @@ int main()
 int findPositions(int** board, int row, int const size)
 {
     // if all rows have queens, problem solved
-    if(row == size) return 1;
+    if(row == size)
+    {
+        print(board, size);
+        for(int i = 0; i < size; i++)
+            for(int j = 0; j < size; j++)
+                board[i][j] = 0;
+        return 1;
+    }
 
     // else cycle through the columns
     for(int i = 0; i < size; i++) 
@@ -64,7 +69,8 @@ int findPositions(int** board, int row, int const size)
         {
             if(findPositions(board, row + 1, size) == 1) //recurse to next row. Returns 1 if the queen was placed successfully
             {
-                return 1;
+                if(row != 0 || i ==size-1)
+                    return 1;
             }
 
         }
