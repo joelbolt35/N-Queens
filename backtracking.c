@@ -38,25 +38,27 @@ int main()
         for(int j = 0; j < size; j++)
             board[i][j] = 0;
 
-    int solveable = 0;
+
     // locate queen's positions
-    solveable = findPositions(board, 0, size);
+    findPositions(board, 0, size);
 
-    if(solveable == 0)
-        printf(ANSI_COLOR_RED "No Solution!\n"ANSI_COLOR_RESET);
-
-    printf("\n%d\n", total);
     return EXIT_SUCCESS;
 }
 
 int findPositions(int** board, int row, int const size)
 {
+    if(size == 2 || size == 3)
+    {
+        printf(ANSI_COLOR_RED "No Solution!\n"ANSI_COLOR_RESET);
+        return 0;
+    }
+
     // if all rows have queens, problem solved
     if(row == size)
     {
         print(board, size);
         total++;
-        return 0;
+        return 1;
     }
 
     // else cycle through the columns
@@ -64,18 +66,11 @@ int findPositions(int** board, int row, int const size)
     {
         board[row][i] = 1;
         // checking for collision
-        if(collisionCheck(board, row, i, size) == 0) 
-        {
-            if(findPositions(board, row + 1, size) == 1) //recurse to next row. Returns 1 if the queen was placed successfully
-            {
-                if(row != 0 || i ==size-1)
-                    return 1;
-            }
-
-        }
+        if(collisionCheck(board, row, i, size) == 0) // If no collision
+            findPositions(board, row + 1, size); //recurse to next row. Returns 1 if the queen was placed successfully
         board[row][i] = 0;
     }
-    
+    return 1;
 }
 
 void print(int** board, int const size)
