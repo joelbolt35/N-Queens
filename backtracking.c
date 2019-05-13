@@ -19,6 +19,7 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
+int total = 0;
 
 int  findPositions(int** board, int row, int const size);
 void print(int** board, int const size);
@@ -44,7 +45,7 @@ int main()
     if(solveable == 0)
         printf(ANSI_COLOR_RED "No Solution!\n"ANSI_COLOR_RESET);
 
-
+    printf("\n%d\n", total);
     return EXIT_SUCCESS;
 }
 
@@ -54,10 +55,8 @@ int findPositions(int** board, int row, int const size)
     if(row == size)
     {
         print(board, size);
-        for(int i = 0; i < size; i++)
-            for(int j = 0; j < size; j++)
-                board[i][j] = 0;
-        return 1;
+        total++;
+        return 0;
     }
 
     // else cycle through the columns
@@ -81,13 +80,14 @@ int findPositions(int** board, int row, int const size)
 
 void print(int** board, int const size)
 {
+    printf(ANSI_COLOR_GREEN "Solution # %d:\n" ANSI_COLOR_RESET, total+1);
     for(int i = 0; i < size; i++)
     {
         printf("\n ");
         for(int j = 0; j < size; j++)
         {
             if(board[i][j] == 1)
-                printf(ANSI_COLOR_RED" %d " ANSI_COLOR_RESET "|" ANSI_COLOR_RESET, board[i][j]);
+                printf(ANSI_COLOR_RED" %d " ANSI_COLOR_RESET "|", board[i][j]);
             else
                 printf( " %d |" , board[i][j]);
         }
